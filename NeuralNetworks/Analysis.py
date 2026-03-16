@@ -298,8 +298,23 @@ def plot_confusion_matrix_per_essay(nn_name, asap1_pred_separate, asap1_true_sep
         fig.savefig("NeuralNetworks/Figures/" + nn_name + "_testing_matrix_set_" + str(i + 1) + ".png")
         plt.close(fig)
 
-def plot_general_stats(nn_name, y_pred_list_train, y_true_list_train, y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test):
+def plot_general_stats(nn_name, y_pred_list_train_both, y_true_list_train_both, y_pred_list_val_both, y_true_list_val_both, y_pred_list_test_both, y_true_list_test_both):
     fig, ax = plt.subplots(2, 4, figsize=(15, 12))
+
+    y_pred_list_train_denorm = y_pred_list_train_both[1]
+    y_true_list_train_denorm = y_true_list_train_both[1]
+    y_pred_list_val_denorm = y_pred_list_val_both[1]
+    y_true_list_val_denorm = y_true_list_val_both[1]
+    y_pred_list_test_denorm = y_pred_list_test_both[1]
+    y_true_list_test_denorm = y_true_list_test_both[1]
+
+    y_pred_list_train = y_pred_list_train_both[0]
+    y_true_list_train = y_true_list_train_both[0]
+    y_pred_list_val = y_pred_list_val_both[0]
+    y_true_list_val = y_true_list_val_both[0]
+    y_pred_list_test = y_pred_list_test_both[0]
+    y_true_list_test = y_true_list_test_both[0]
+
 
     train_loss_logger = []
     val_loss_logger = []
@@ -328,22 +343,21 @@ def plot_general_stats(nn_name, y_pred_list_train, y_true_list_train, y_pred_lis
         y_true_val = y_true_list_val[i]
         y_true_val_true_only = np.array(y_true_val)[:, 0]
 
-
-
-        y_pred_val_rounded = list(map(round, (np.array(y_pred_val))))
-        y_true_val_rounded = list(map(round, (np.array(y_true_val_true_only))))
-
-
         val_loss_logger.append(mean_squared_error(y_true_val_true_only, y_pred_val))
-
-
-
-        val_accuracy_logger.append(accuracy_score(y_true_val_rounded, y_pred_val_rounded))
         
 
         val_mse_logger.append(mean_squared_error(y_true_val_true_only, y_pred_val))
         val_mae_logger.append(mean_absolute_error(y_true_val_true_only, y_pred_val))
 
+
+        y_pred_val_denorm = y_pred_list_val_denorm[i]
+        y_true_val_denorm = y_true_list_val_denorm[i]
+        y_true_val_true_only_denorm = np.array(y_true_val_denorm)[:, 0]
+
+        y_pred_val_rounded = list(map(round, (np.array(y_pred_val_denorm))))
+        y_true_val_rounded = list(map(round, (np.array(y_true_val_true_only_denorm))))
+
+        val_accuracy_logger.append(accuracy_score(y_true_val_rounded, y_pred_val_rounded))
         val_qwk_logger.append(cohen_kappa_score(y_true_val_rounded, y_pred_val_rounded, weights='quadratic'))
 
 
@@ -352,8 +366,12 @@ def plot_general_stats(nn_name, y_pred_list_train, y_true_list_train, y_pred_lis
         y_true_test_true_only = np.array(y_true_test)[:, 0]
 
 
-        y_pred_test_rounded = list(map(round, (np.array(y_pred_test))))
-        y_true_test_rounded = list(map(round, (np.array(y_true_test_true_only))))
+        y_pred_test_denorm = y_pred_list_test_denorm[i]
+        y_true_test_denorm = y_true_list_test_denorm[i]
+        y_true_test_true_only_denorm = np.array(y_true_test_denorm)[:, 0]
+
+        y_pred_test_rounded = list(map(round, (np.array(y_pred_test_denorm))))
+        y_true_test_rounded = list(map(round, (np.array(y_true_test_true_only_denorm))))
 
         test_loss_logger.append(mean_squared_error(y_true_test_true_only, y_pred_test))
 
@@ -465,7 +483,7 @@ def plot_result_for_nn(nn_name, y_pred_list_train, y_true_list_train, y_pred_lis
     plot_confusion_matrix_per_essay(nn_name, asap1_pred_separate, asap1_true_separate, asap1_pred_separate_val, asap1_true_separate_val, asap2_pred_separate_test, asap2_true_separate_test)
     plot_confusion_matrix(nn_name, y_pred_list_train_denorm, y_true_list_train_denorm, y_pred_list_val_denorm, y_true_list_val_denorm, y_pred_list_test_denorm, y_true_list_test_denorm)
     plot_per_essay(nn_name, asap1_pred_separate, asap1_true_separate, asap1_pred_separate_val, asap1_true_separate_val, asap2_pred_separate_test, asap2_true_separate_test)
-    plot_general_stats(nn_name, y_pred_list_train_denorm, y_true_list_train_denorm, y_pred_list_val_denorm, y_true_list_val_denorm, y_pred_list_test_denorm, y_true_list_test_denorm)
+    plot_general_stats(nn_name, [y_pred_list_train, y_pred_list_train_denorm], [y_true_list_train, y_true_list_train_denorm], [y_pred_list_val, y_pred_list_val_denorm], [y_true_list_val, y_true_list_val_denorm], [y_pred_list_test, y_pred_list_test_denorm], [y_true_list_test, y_true_list_test_denorm])
     
 
 def run_and_plot_nns(nns, train_loader, val_loader, test_loader):

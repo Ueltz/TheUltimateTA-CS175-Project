@@ -64,21 +64,28 @@ def denormalize_scores(y_pred_list, y_true_list, asap_version):
     y_pred_list_denorm = []
     y_true_list_denorm = []
 
+    y_pred_list_copy = y_pred_list.copy()
+    y_true_list_copy = y_true_list.copy()
+
     for i in range(len(y_pred_list)):
         prompt_id = y_true_list[i][1]
 
         if asap_version == 1:
-            y_pred_list[i] = int(round(denormalize_asap1(y_pred_list[i], prompt_id)))
-            y_pred_list_denorm.append(y_pred_list[i])
+            y_pred_list_copy[i] = int(round(denormalize_asap1(y_pred_list_copy[i], prompt_id)))
+            y_pred_list_denorm.append(y_pred_list_copy[i])
 
-            y_true_list[i][0] = int(round(denormalize_asap1(y_true_list[i][0], prompt_id)))
-            y_true_list_denorm.append(y_true_list[i])
+            temp = y_true_list_copy[i].copy()
+
+            temp[0] = int(round(denormalize_asap1(temp[0], prompt_id)))
+            y_true_list_denorm.append(temp)
         else:
-            y_pred_list[i] = int(round(denormalize_asap2(y_pred_list[i])))
-            y_pred_list_denorm.append(y_pred_list[i])
+            y_pred_list_copy[i] = int(round(denormalize_asap2(y_pred_list_copy[i])))
+            y_pred_list_denorm.append(y_pred_list_copy[i])
 
-            y_true_list[i][0] = int(round(denormalize_asap2(y_true_list[i][0])))
-            y_true_list_denorm.append(y_true_list[i])
+            temp = y_true_list_copy[i].copy()
+
+            temp[0] = int(round(denormalize_asap2(temp[0])))
+            y_true_list_denorm.append(temp)
 
     return y_pred_list_denorm, y_true_list_denorm
 
