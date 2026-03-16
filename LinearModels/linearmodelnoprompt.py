@@ -27,11 +27,18 @@ else:
 sentence_model = SentenceTransformer("all-mpnet-base-v2", device=device)
 
 def get_document_embedding(essay):
+    """
+    Gets essay level embedding by encoding the entire essay as a single string using SentenceTransformer.
+    """
     embedding = sentence_model.encode(essay)
     
     return embedding
 
 def data_tokenize(asap1_train, asap1_val, asap2, batch_size=32):
+    """
+    Generates embeddings for all essays in asap1_train, asap1_val, and asap2 datasets using SentenceTransformer.
+    Returns a dictionary containing embeddings and normalized scores for each dataset. Embeddings are generated in batches with a progress bar for efficiency.
+    """
     all_texts = list(asap1_train['text']) + list(asap1_val['text']) + list(asap2['text'])
     
     all_embeddings = []
@@ -57,6 +64,11 @@ def data_tokenize(asap1_train, asap1_val, asap2, batch_size=32):
     }
 
 def embed_and_pickle():
+    '''
+    The embedding file used in here is the embedding file which was used to train the model in this.
+    This file may be missing from the github.
+    In order to get the missing file, perhaps look into the NeuralNetworks code; I used Alex's embeddings for consistency. 
+    '''
     with open('processed_data/alex_embeddings_no_prompt_with_demographics.pkl', 'rb') as f:
         data = pickle.load(f)
         print("found file")
@@ -77,6 +89,9 @@ def embed_and_pickle():
         return X_train, Y_train, X_val, Y_val, X_test, Y_test
 
 def evaluate_model(y_true_norm, y_pred_norm, dataset_name, y_true_raw=None, y_pred_raw=None):
+    '''
+    Evaluates the model's performance by calculating MSE, MAE, Accuracy, and Quadratic Weighted Kappa.
+    '''
     mse = mean_squared_error(y_true_norm, y_pred_norm)
     mae = mean_absolute_error(y_true_norm, y_pred_norm)
     y_true_int = np.rint(y_true_norm)
@@ -108,13 +123,13 @@ def save_tokenized_data(tokenized, cache_path='processed_data/embeddings.pkl'):
     ensure_cache_dir()
     with open(cache_path, 'wb') as f:
         pickle.dump(tokenized, f)
-    print(f"✓ Cached embeddings to {cache_path}")
+    print(f" Cached embeddings to {cache_path}")
 
 def load_tokenized_data(cache_path='processed_data/embeddings.pkl'):
     if os.path.exists(cache_path):
         with open(cache_path, 'rb') as f:
             tokenized = pickle.load(f)
-        print(f"✓ Loaded embeddings from cache ({cache_path})")
+        print(f" Loaded embeddings from cache ({cache_path})")
         return tokenized
     return None
 
@@ -122,6 +137,11 @@ def scale_array(arr, scalar):
     return (arr * scalar).astype(int)
 
 def get_results():
+    '''
+    For usage in comparemodels.py
+    Returns the results of the model evaluation in a dictionary format.
+    '''
+    
     print("Loading data from pickle...")
     X_train, Y_train, X_val, Y_val, X_test, Y_test = embed_and_pickle()
     
@@ -311,6 +331,7 @@ if __name__ == '__main__':
     
     print("\nPer-Prompt Results on ASAP1 Validation Set:")
     print("=" * 60)
+    # per prompt evaluation on ASAP 1.0 validation set
     unique_prompts = sorted(np.unique(val_prompt_ids))
     per_prompt_results = {}
     for pid in unique_prompts:
@@ -321,6 +342,7 @@ if __name__ == '__main__':
         y_pred_raw = y_val_pred_raw[mask]
         per_prompt_results[f"Prompt {pid}"] = evaluate_model(y_true_norm, y_pred_norm, f"Prompt {pid}", y_true_raw, y_pred_raw)
     
+    # demographic analysis on ASAP 2.0
     print("\nSubgroup Results on ASAP 2.0 Set:")
     print("=" * 60)
     
@@ -391,7 +413,7 @@ if __name__ == '__main__':
     
     plt.tight_layout()
     plt.savefig('processed_data/per_prompt_comparison_noprompt.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved per-prompt visualization to processed_data/per_prompt_comparison_noprompt.png")
+    print(" Saved per-prompt visualization to processed_data/per_prompt_comparison_noprompt.png")
     plt.show()
     
     print("\nGenerating visualizations...")
@@ -427,7 +449,7 @@ if __name__ == '__main__':
     
     plt.tight_layout()
     plt.savefig('processed_data/model_comparison_noprompt.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved visualization to processed_data/model_comparison_noprompt.png")
+    print(" Saved visualization to processed_data/model_comparison_noprompt.png")
     plt.show()
     
     print("\nGenerating subgroup visualizations...")
@@ -466,9 +488,10 @@ if __name__ == '__main__':
         
         plt.tight_layout()
         plt.savefig(f'processed_data/subgroup_{name}_comparison_noprompt.png', dpi=300, bbox_inches='tight')
-        print(f"✓ Saved {name} visualization to processed_data/subgroup_{name}_comparison_noprompt.png")
+        print(f" Saved {name} visualization to processed_data/subgroup_{name}_comparison_noprompt.png")
         plt.show()
     
+    # generate confusion matrices for ASAP 2.0
     print("\nGenerating confusion matrix for ASAP 2.0...")
     cm = confusion_matrix(y_asap2_true_raw, y_asap2_pred_raw)
 
@@ -497,9 +520,12 @@ if __name__ == '__main__':
 
     plt.tight_layout()
     plt.savefig('processed_data/confusion_matrix_noprompt.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved confusion matrix to processed_data/confusion_matrix_noprompt.png")
+    print(" Saved confusion matrix to processed_data/confusion_matrix_noprompt.png")
     plt.show()
     
+    # generate confusion matrices for ASAP 1.0 (combining train and val sets)
+    # the resulting matrix is quite large due to the different score ranges of essay sets
+    # you should mainly look at scores from 0-6
     print("\nGenerating confusion matrix for ASAP 1.0...")
     combined_ASAP1_true = np.concatenate([y_train_true_raw, y_val_true_raw])
     combined_ASAP1_pred = np.concatenate([y_train_pred_raw, y_val_pred_raw])
@@ -530,7 +556,7 @@ if __name__ == '__main__':
 
     plt.tight_layout()
     plt.savefig('processed_data/asap1_confusion_matrix_noprompt.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved confusion matrix to processed_data/asap1_confusion_matrix_noprompt.png")
+    print(" Saved confusion matrix to processed_data/asap1_confusion_matrix_noprompt.png")
     plt.show()
     
    

@@ -18,6 +18,7 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
 # Detect GPU availability
+# My device always showed up as CPU, so I don't know if the GPU really works here.
 device = "cuda" if torch.cuda.is_available() else "cpu"
 if device == "cuda":
     gpu_name = torch.cuda.get_device_name(0)
@@ -25,7 +26,7 @@ if device == "cuda":
 else:
     print("GPU not available, using CPU")
 
-sentence_model = SentenceTransformer("all-mpnet-base-v2", device=device)
+sentence_model = SentenceTransformer("all-mpnet-base-v2", device=device) # load SentenceBert transformer model
 
 def get_document_embedding(essay):
     """Encode entire document as a single embedding"""
@@ -34,6 +35,10 @@ def get_document_embedding(essay):
     return embedding
 
 def data_tokenize(asap1_train, asap1_val, asap2, batch_size=32):
+    """
+    Generates embeddings for all essays in asap1_train, asap1_val, and asap2 datasets using SentenceTransformer.
+    Returns a dictionary containing embeddings and normalized scores for each dataset. Embeddings are generated in batches with a progress bar for efficiency.
+    """
     all_texts = list(asap1_train['text']) + list(asap1_val['text']) + list(asap2['text'])
     
     # Generate embeddings in batches with progress bar
@@ -118,7 +123,10 @@ def scale_array(arr, scalar):
     return (arr * scalar).astype(int)
 
 def get_results():
-    # always load data early (needed for prompt_ids and raw scores)
+    """
+    For usage in comparemodels.py
+    Returns the results of the model evaluation in a dictionary format.
+    """
     print("Loading data...")
     data_array = preprocessing.load_all_data()
 
@@ -387,7 +395,7 @@ if __name__ == '__main__':
     print("✓ Saved per-prompt visualization to processed_data/per_prompt_comparison.png")
     plt.show()
     
-    # Create visualizations
+    # Create visualizations for overall performance across datasets
     print("\nGenerating visualizations...")
     datasets = ['Training Set', 'Validation Set', 'ASAP 2.0 Set']
     metrics = ['MSE', 'MAE', 'Accuracy', 'Kappa']
@@ -427,7 +435,7 @@ if __name__ == '__main__':
     
     # Confusion matrix for ASAP 2.0
     print("\nGenerating confusion matrix for ASAP 2.0...")
-    # Round predictions to nearest integer for confusion matrix
+    # Round predictions to nearest integer for confusion matrix (this was an error that is fixed this way)
     y_asap2_pred_raw_rounded = np.round(y_asap2_pred_raw).astype(int)
     cm = confusion_matrix(y_asap2_true_raw, y_asap2_pred_raw_rounded)
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -435,7 +443,7 @@ if __name__ == '__main__':
     ax.set_xlabel('Predicted Score')
     ax.set_ylabel('True Score')
     ax.set_title('Confusion Matrix - ASAP 2.0 Set')
-    # Set tick labels based on actual unique scores
+    # for some reason there was a time where a score of 0 existed in the other model
     unique_scores = sorted(np.unique(np.concatenate([y_asap2_true_raw, y_asap2_pred_raw_rounded])))
     ax.set_xticklabels(unique_scores)
     ax.set_yticklabels(unique_scores)

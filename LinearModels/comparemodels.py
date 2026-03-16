@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import linearmodel, linearmodelnoprompt
 
 def plot_model_comparison(results_linear, results_no_prompt):
+    # compares the results of the linear model with and without the prompt across ASAP 1.0 and ASAP 2.0 datasets, and visualizes the differences in performance metrics (MSE, MAE, Accuracy, Kappa) using bar charts.
     datasets = list(results_linear.keys())
     metrics = ['MSE', 'MAE', 'Accuracy', 'Kappa']
 

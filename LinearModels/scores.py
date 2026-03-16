@@ -1,5 +1,7 @@
 import pandas as pd
-
+"""
+Checking the distrubution of scores in the ASAP 2.0 dataset, which has a different score range than ASAP 1.0. This is important for understanding how to evaluate the model's performance on this dataset and to ensure that the model is trained to predict scores within the correct range.    
+"""
 # Load the ASAP2_train_sourcetexts.csv file
 df = pd.read_csv('data/ASAP2_train_sourcetexts.csv')
 
