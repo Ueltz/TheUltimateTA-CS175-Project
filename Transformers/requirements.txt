@@ -1,0 +1,11 @@
+torch>=2.0
+transformers>=4.36
+peft>=0.7
+datasets
+accelerate
+scikit-learn
+pandas
+numpy
+coral-pytorch
+scipy
+tqdm
