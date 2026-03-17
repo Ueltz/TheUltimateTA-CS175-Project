@@ -16,6 +16,7 @@ from Analysis import run_and_plot_nns
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+#this loads the data into the neural networks, trains, tests, and plots the results.
 def set_up_train_test_plot():
     print("device is " + str(torch.device))
 
@@ -50,6 +51,7 @@ def set_up_train_test_plot():
     torch.save(mlp, "NeuralNetworks/MLP_model")
     torch.save(bnn, "NeuralNetworks/BNN_model")
 
+#this function was written for the notebook, it plots or prints the data it is given using QWK.
 def inference_data_visualization(nn_name, y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test, plot):
 
     y_pred_val, y_true_val = denormalize_scores(y_pred_list_val, y_true_list_val, 1)
@@ -78,6 +80,8 @@ def inference_data_visualization(nn_name, y_pred_list_val, y_true_list_val, y_pr
     print("Val QWK: " + str(val_qwk))
     print("Test QWK: " + str(test_qwk))
 
+
+#this was written for the notebook, it loads a subset of data.
 def load_data_for_inference():
     try:
         data = pickle.load(open('NeuralNetworks/inference_data.pkl', 'rb'))
@@ -99,6 +103,7 @@ def load_data_for_inference():
 
         return val, test
 
+#this was written for the notebook, it loads the models, runs, inferences, and prints the results
 def load_model_run_inference():
     print("device is " + str(torch.device))
 
@@ -127,7 +132,7 @@ def load_model_run_inference():
 
     inference_data_visualization(bnn.get_name(), y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test, plot)
 
-
+#runs the neural networks
 def main():
     set_up_train_test_plot()
     

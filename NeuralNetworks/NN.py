@@ -14,6 +14,7 @@ import tqdm
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class NN:
+    #gradient descent function
     def calculate_grad(self, model):
         gradient_mag = 0
         for parameter in model.parameters():
@@ -21,6 +22,7 @@ class NN:
                 gradient_mag += parameter.grad.data.norm(2).item() ** 2
         return gradient_mag ** 0.5
         
+    #train loop that returns predidcted and true values
     def train_epoch(self, train_loader):
         loss_average = []
 
@@ -56,6 +58,7 @@ class NN:
 
         return y_pred, y_true
 
+    #test loop that returns predicted and true values
     def test_model(self, test_loader):
         with torch.no_grad():
 
@@ -78,7 +81,7 @@ class NN:
   
             return y_pred, y_true
 
-
+    #uses both the train and test loop in a for loop
     def train_and_test_model(self, train_loader, test_loader, Asap2test_loader, num_epochs):
         y_pred_list_train = []
         y_true_list_train = []
@@ -110,6 +113,7 @@ class NN:
 
         return y_pred_list_train, y_true_list_train, y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test
 
+    #begins the training and testing
     def run_NN(self, train_loader, test_loader, Asap2test_loader, epochs):
 
         y_pred_list_train, y_true_list_train, y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test = self.train_and_test_model(train_loader, test_loader, Asap2test_loader, num_epochs=epochs)

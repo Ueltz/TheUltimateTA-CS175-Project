@@ -11,6 +11,7 @@ import numpy as np
 from sklearn.metrics import ConfusionMatrixDisplay, mean_absolute_error, mean_squared_error, accuracy_score, cohen_kappa_score
 from Data_processing import denormalize_all_scores
 
+#separates the data by race/ethnicity
 def separate_by_race_ethnicity(y_pred_list, y_true_list):
     y_pred_list_by_race_ethnicity = []
     y_true_list_by_race_ethnicity = []
@@ -28,6 +29,7 @@ def separate_by_race_ethnicity(y_pred_list, y_true_list):
 
     return y_pred_list_by_race_ethnicity, y_true_list_by_race_ethnicity
 
+#plots bargraphs of average score per race/ethnicity, predicted and true
 def plot_by_race_ethnicity(nn_name, y_pred_list_test, y_true_list_test): #only accepts asap 2
 
     essay_sets_by_race_ethnicity_pred = []
@@ -110,7 +112,7 @@ def plot_by_race_ethnicity(nn_name, y_pred_list_test, y_true_list_test): #only a
     print("Asap2 total average predicted score: " + str(pred_average) + " total average true score: " + str(test_average) + " difference: " + str(pred_average - test_average))
 
     
-
+#separates prompts by set
 def separate_by_prompt_id(y_pred_list, y_true_list, num_of_prompts):
     y_pred_list_by_prompt_id = []
     y_true_list_by_prompt_id = []
@@ -138,6 +140,7 @@ def separate_by_prompt_id(y_pred_list, y_true_list, num_of_prompts):
 
     return y_pred_list_by_prompt_id, y_true_list_by_prompt_id
 
+#plots the qwk per essay set per epoch as well as some accuracy stats
 def plot_per_essay(nn_name, asap1_pred_separate, asap1_true_separate, asap1_pred_separate_val, asap1_true_separate_val, asap2_pred_separate_test, asap2_true_separate_test):
     
     training_essays_qwk = []
@@ -206,7 +209,7 @@ def plot_per_essay(nn_name, asap1_pred_separate, asap1_true_separate, asap1_pred
     fig.savefig("NeuralNetworks/Figures/" + nn_name + "_per_essay_qwk.png")
     plt.close(fig)
 
-
+#plots the confusion matrix for the last epoch
 def plot_confusion_matrix(nn_name, y_pred_list_train, y_true_list_train, y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test):
 
     y_pred_train_rounded = list(map(round, np.array(y_pred_list_train[-1])))
@@ -298,6 +301,7 @@ def plot_confusion_matrix_per_essay(nn_name, asap1_pred_separate, asap1_true_sep
         fig.savefig("NeuralNetworks/Figures/" + nn_name + "_testing_matrix_set_" + str(i + 1) + ".png")
         plt.close(fig)
 
+#plots a slew of stats, qwk, accuracy, mse, mae, per epoch
 def plot_general_stats(nn_name, y_pred_list_train_both, y_true_list_train_both, y_pred_list_val_both, y_true_list_val_both, y_pred_list_test_both, y_true_list_test_both):
     fig, ax = plt.subplots(2, 4, figsize=(15, 12))
 
@@ -472,6 +476,7 @@ def plot_general_stats(nn_name, y_pred_list_train_both, y_true_list_train_both, 
 
     print("finished")
 
+#calls all of the plotting functions
 def plot_result_for_nn(nn_name, y_pred_list_train, y_true_list_train, y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test):
     y_pred_list_train_denorm, y_true_list_train_denorm, y_pred_list_val_denorm, y_true_list_val_denorm, y_pred_list_test_denorm, y_true_list_test_denorm = denormalize_all_scores(y_pred_list_train, y_true_list_train, y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test)
 

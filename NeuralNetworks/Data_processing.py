@@ -13,7 +13,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from sentence_transformers import SentenceTransformer
 from shared_data_prep import load_all_data, denormalize_asap1, denormalize_asap2
 
-
+#simple code to create dataloaders from text and truth values
 def create_loader(X_test, Y_test):
     test_dataset = TensorDataset(X_test, Y_test)
 
@@ -21,7 +21,7 @@ def create_loader(X_test, Y_test):
 
     return test_loader
 
-
+#this works in conjunction with the denormalize scores to make it work on functions
 def denormalize_all_scores(y_pred_list_train, y_true_list_train, y_pred_list_val, y_true_list_val, y_pred_list_test, y_true_list_test):
     y_pred_list_train_denorm = []
     y_true_list_train_denorm = []
@@ -59,7 +59,7 @@ def denormalize_all_scores(y_pred_list_train, y_true_list_train, y_pred_list_val
 
     return y_pred_list_train_denorm, y_true_list_train_denorm, y_pred_list_val_denorm, y_true_list_val_denorm, y_pred_list_test_denorm, y_true_list_test_denorm
 
-
+#this function distinguishes between asap1 and 2 to call the correct functions
 def denormalize_scores(y_pred_list, y_true_list, asap_version):
     y_pred_list_denorm = []
     y_true_list_denorm = []
@@ -89,12 +89,13 @@ def denormalize_scores(y_pred_list, y_true_list, asap_version):
 
     return y_pred_list_denorm, y_true_list_denorm
 
-
+#uses navids code to load data and store it
 def load_everything_navid():
     #nltk.download('punkt_tab')
 
     return embed_and_pickle()
 
+#goes through all the demographic information converting to integers to make it usable in tensors
 def convert_asap2_demographics(asap2):
     print("Convert demographics")
     print("Initial shape: " + str(asap2.shape))
@@ -111,7 +112,7 @@ def convert_asap2_demographics(asap2):
 
     return asap2
 
-
+#uses navids code to load data, embed it,and store it
 def embed_and_pickle():
     try:
         data = pickle.load(open('NeuralNetworks/alex_embeddings_no_prompt_with_demographics.pkl', 'rb'))
@@ -176,6 +177,7 @@ def embed_and_pickle():
 
     return X_train, Y_train, X_val, Y_val, X_test, Y_test
 
+#removes the prompt (first sentence) from the essays
 def remove_prompt_from_essays(essays):
     new_essays = []
     for essay in essays:
