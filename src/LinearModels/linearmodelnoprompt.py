@@ -208,19 +208,19 @@ def get_results():
     print(type(Y_train))
     print(Y_train)
     y_train_true_raw = np.array([preprocessing.denormalize_asap1(n, pid)
-        for n, pid in zip(np.array(Y_train[:,0]), train_prompt_ids)])
+                                 for n, pid in zip(np.array(Y_train[:,0]), train_prompt_ids)])
     y_train_pred_raw = np.array([
         preprocessing.denormalize_asap1(n, pid)
         for n, pid in zip(y_train_pred, train_prompt_ids)
     ])
     y_val_true_raw = np.array([preprocessing.denormalize_asap1(n, pid)
-        for n, pid in zip(np.array(Y_val[:,0]), val_prompt_ids)])
+                               for n, pid in zip(np.array(Y_val[:,0]), val_prompt_ids)])
     y_val_pred_raw = np.array([
         preprocessing.denormalize_asap1(n, pid)
         for n, pid in zip(y_val_pred, val_prompt_ids)
     ])
     y_asap2_true_raw = np.array([preprocessing.denormalize_asap2(n)
-        for n in np.array(Y_test[:,0])])
+                                 for n in np.array(Y_test[:,0])])
     y_asap2_pred_raw = np.array([
         int(preprocessing.denormalize_asap2(n)) for n in y_asap2_pred
     ])
@@ -306,19 +306,19 @@ if __name__ == '__main__':
     print(type(Y_train))
     print(Y_train)
     y_train_true_raw = np.array([preprocessing.denormalize_asap1(n, pid)
-        for n, pid in zip(np.array(Y_train[:,0]), train_prompt_ids)])
+                                 for n, pid in zip(np.array(Y_train[:,0]), train_prompt_ids)])
     y_train_pred_raw = np.array([
         preprocessing.denormalize_asap1(n, pid)
         for n, pid in zip(y_train_pred, train_prompt_ids)
     ])
     y_val_true_raw = np.array([preprocessing.denormalize_asap1(n, pid)
-        for n, pid in zip(np.array(Y_val[:,0]), val_prompt_ids)])
+                               for n, pid in zip(np.array(Y_val[:,0]), val_prompt_ids)])
     y_val_pred_raw = np.array([
         preprocessing.denormalize_asap1(n, pid)
         for n, pid in zip(y_val_pred, val_prompt_ids)
     ])
     y_asap2_true_raw = np.array([preprocessing.denormalize_asap2(n)
-        for n in np.array(Y_test[:,0])])
+                                 for n in np.array(Y_test[:,0])])
     y_asap2_pred_raw = np.array([
         int(preprocessing.denormalize_asap2(n)) for n in y_asap2_pred
     ])
